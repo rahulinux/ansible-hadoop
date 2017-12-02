@@ -1,0 +1,25 @@
+---
+- name: Downloading JAVA
+  local_action: "get_url  
+            dest='/tmp/java.rpm'
+            headers='Cookie:oraclelicense=accept-securebackup-cookie' 
+            url='{{download_url}}'"
+  become: no
+
+- copy: src=/tmp/java.rpm dest={{ java_archive }} 
+
+- name: Installing JAVA
+  yum: name={{java_archive}} state=present disable_gpg_check=yes
+
+- name: Setup ENV for JAVA
+  lineinfile:
+        dest=/etc/profile.d/java.sh
+        state=present 
+        create=true
+        regexp='export JAVA_HOME.*'
+        line='export JAVA_HOME={{ extra_path }}'
+
+- lineinfile:
+       dest=/etc/profile.d/java.sh
+       state=present 
+       line="export PATH=$JAVA_HOME/bin:$PATH"

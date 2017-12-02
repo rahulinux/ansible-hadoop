@@ -1,6 +1,6 @@
 ---
-download_url: "http://download.oracle.com/otn-pub/java/jdk/8u45-b14/jdk-8u45-linux-x64.rpm"
+download_url: "http://download.oracle.com/otn-pub/java/jdk/8u151-b12/e758a0de34e24606bca991d704f6dcbf/jdk-8u151-linux-x64.rpm" 
 download_folder: "/opt"
-java_archive: "{{download_folder}}/jdk-8u45-linux-x64.rpm"
-extra_path: "/usr/java/jdk1.8.0_45"
+java_archive: "{{download_folder}}/{{ download_url | basename }}"
+extra_path: "/usr/java/jdk1.8.0_151"
 
