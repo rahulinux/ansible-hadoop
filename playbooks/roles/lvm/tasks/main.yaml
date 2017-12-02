@@ -1,0 +1,38 @@
+---
+- name: Creating new partition
+  parted:
+    device: /dev/sdb
+    number: 1
+    flags: [ lvm ]
+    state: present
+
+- name: Creating LVM partition
+  lvg:
+    vg: hadoop_vg
+    pvs: "{{ disk }}1"
+
+- name: Creating hadoop data partition
+  lvol:
+    vg: hadoop_vg
+    lv: data
+    size: 100%FREE
+    shrink: no
+  register: lv_status
+    
+
+- name: Creating mount point /data
+  file: path=/data state=directory
+
+- name: Format filesystem
+  filesystem:
+    fstype: ext4
+    dev: "/dev/hadoop_vg/data" 
+  when: lv_status|changed
+
+- name: Mount data volume
+  mount:
+    src: "/dev/hadoop_vg/data"
+    path: "/data"
+    fstype: ext4
+    state: mounted
+

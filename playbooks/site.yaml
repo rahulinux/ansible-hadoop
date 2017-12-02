@@ -3,6 +3,8 @@
   become: yes
   gather_facts: yes
   roles:
+  - role: lvm
+    disk: "/dev/sdb"
   - role: common
   - role: java
 
