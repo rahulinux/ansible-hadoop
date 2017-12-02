@@ -84,7 +84,7 @@ Vagrant.configure(2) do |config|
                     "slave-nodes" => [ "#{data_nodes[:hostname]}" + "[1:index]" ],
                     "all_groups:children" => [ "master-nodes", "slave-nodes" ]
                   }
-                  ansible.playbook = "playbooks/site.yml"
+                  ansible.playbook = "playbooks/site.yaml"
                   ansible.verbose = "vvv"
                 end
             end
