@@ -1,0 +1,15 @@
+---
+- name: Check ssh-key exists or not 
+  stat:  
+     path: /home/{{ hadoop_user }}/.ssh/id_rsa
+  register: st
+
+- name: Creating pub SSH keys
+  command: ssh-keygen -N '' -f /home/{{ hadoop_user }}/.ssh/id_rsa
+  become_user: "{{ hadoop_user }}"
+  when: not st.stat.exists
+
+- name: Downloading pub key
+  fetch: src=/home/{{ hadoop_user }}/.ssh/id_rsa.pub dest=id_rsa.pub flat=yes
+
+

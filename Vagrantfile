@@ -80,8 +80,8 @@ Vagrant.configure(2) do |config|
                 config.vm.provision "ansible" do |ansible|
                   ansible.limit = "all,localhost"
                   ansible.groups = {
-                    "master-nodes" => ["#{masters[0][:hostname]}"],
-                    "slave-nodes" => [ "#{data_nodes[:hostname]}" + "[1:index]" ],
+                    "namenode" => ["#{masters[0][:hostname]}"],
+                    "datanodes" => [ "#{data_nodes[:hostname]}-[1:#{index}]" ],
                     "all_groups:children" => [ "master-nodes", "slave-nodes" ]
                   }
                   ansible.playbook = "playbooks/site.yaml"

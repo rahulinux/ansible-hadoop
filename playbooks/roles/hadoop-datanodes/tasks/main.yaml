@@ -1,0 +1,5 @@
+---
+- name: Set authorized key took from file
+  authorized_key:
+     user: "{{ hadoop_user }}"
+     key: "{{ lookup('file', 'id_rsa.pub') }}"

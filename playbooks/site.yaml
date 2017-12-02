@@ -1,7 +1,19 @@
 ---
 - hosts: all
   become: yes
-  gather_facts: no
+  gather_facts: yes
   roles:
   - role: common
   - role: java
+
+- hosts: namenode
+  become: yes
+  gather_facts: no
+  roles:
+  - role: hadoop-namenode
+
+- hosts: datanodes
+  become: yes
+  gather_facts: no
+  roles:
+  - role: hadoop-datanodes
