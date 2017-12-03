@@ -1,0 +1,66 @@
+---
+- name: Set hadoop env vars
+  lineinfile:
+    path: "/etc/profile.d/hadoop_env.sh"
+    create: yes
+    line: '{{ item }}'
+  with_items:
+  - "HADOOP_HOME=/opt/hadoop/"
+  - "export PATH=$HADOOP_HOME/bin:$HADOOP_HOME/sbin:$PATH"
+  - "export HADOOP_MAPRED_HOME=$HADOOP_HOME"
+  - "export HADOOP_COMMON_HOME=$HADOOP_HOME"
+  - "export HADOOP_HDFS_HOME=$HADOOP_HOME"
+  - "export YARN_HOME=$HADOOP_HOME"
+  - "export HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native"
+  - "export HADOOP_OPTS='-Djava.library.path=$HADOOP_INSTALL/lib'"
+
+- name: Extracting Hadoop archive
+  unarchive:
+    src: "/tmp/{{ hadoop_download_url | basename }}"
+    dest: "/opt/"
+    owner: "{{ hadoop_user }}"
+    group: "{{ hadoop_user }}"
+    remote_src: yes
+
+- name: Creating symlink for hadoop version
+  file: 
+    src: "/opt/{{ hadoop_download_url | basename | replace('.tar.gz','')}}"
+    dest: "/opt/hadoop"
+    state: link
+
+- name: creating dirs for storage
+  file: 
+    path: "/data/{{ item }}"
+    owner: "{{ hadoop_user }}"
+    group: "{{ hadoop_user }}"
+    state: directory
+  with_items:
+  - "nn"
+  - "dn"
+
+- name: Congfiguring hadoop xml
+  template: 
+     dest: "/opt/hadoop/etc/hadoop/{{ item }}"
+     src: "{{ item }}.j2"
+  with_items:
+  - "core-site.xml"
+  - "hdfs-site.xml"
+  - "yarn-site.xml"
+
+- name: Updating slave file
+  lineinfile:
+    path: "/opt/hadoop/etc/hadoop/slaves"
+    line: "{{ item }}"
+  with_items: 
+  - "{{ groups.namenode }}"
+  - "{{ groups.datanodes }}"
+
+- lineinfile:
+    path: "/opt/hadoop/etc/hadoop/slaves"
+    line: "localhost"
+    state: "absent"
+
+- name: Set authorized key took from file
+  authorized_key:
+     user: "{{ hadoop_user }}"
+     key: "{{ lookup('file', 'id_rsa.pub') }}"

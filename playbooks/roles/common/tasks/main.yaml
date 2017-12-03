@@ -6,8 +6,6 @@
   user: 
      name: "{{ hadoop_user }}"
 
-- debug: var=hostvars
-
 - name: Generate /etc/hosts file
   template:
     src: hosts.j2

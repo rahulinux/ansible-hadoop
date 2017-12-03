@@ -1,16 +1,16 @@
 ---
-- hosts: all
-  become: yes
-  gather_facts: yes
-  roles:
-  - role: lvm
-    disk: "/dev/sdb"
-  - role: common
-  - role: java
-
+#- hosts: all
+#  become: yes
+#  gather_facts: yes
+#  roles:
+#  - role: lvm
+#    disk: "/dev/sdb"
+#  - role: common
+#  - role: java
+#
 - hosts: namenode
   become: yes
-  gather_facts: no
+  gather_facts: yes
   roles:
   - role: hadoop-namenode
 

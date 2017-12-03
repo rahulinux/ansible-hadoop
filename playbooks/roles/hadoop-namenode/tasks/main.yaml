@@ -12,4 +12,37 @@
 - name: Downloading pub key
   fetch: src=/home/{{ hadoop_user }}/.ssh/id_rsa.pub dest=id_rsa.pub flat=yes
 
+- name: For each host, scan for its ssh public key
+  shell: "ssh-keyscan {{ item }},`dig +short {{ item }}`"
+  with_items: "{{ groups['all'] }}"
+  register: ssh_known_host_results
+  ignore_errors: yes
+
+- name: Updating known_hosts for datanodes
+  known_hosts:
+     name: "{{ item.item }}"
+     key: "{{ item.stdout }}"
+     path: "/etc/ssh/ssh_known_hosts"
+  with_items: "{{ ssh_known_host_results.results }}"  
+
+- name: Downloading Hadoop Binaries
+  get_url:
+    url: "{{ hadoop_download_url  }}"
+    dest: "/tmp/{{ hadoop_download_url | basename }}"
+
+- include: hadoop-common.yaml
+
+- name: Checking if namenode already format
+  stat:
+     path: "/data/nn/current"
+  register: nnfs
+
+- name: Format namenode
+  shell:  source /etc/bashrc && hdfs namenode -format
+  become_user: "{{ hadoop_user }}"
+  when: not nnfs.stat.exists
+
+- name: Start HDFS
+  shell: source /etc/bashrc && /opt/hadoop/sbin/start-dfs.sh 
+  become_user: "{{ hadoop_user }}"
 

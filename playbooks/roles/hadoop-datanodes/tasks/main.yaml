@@ -1,5 +1,11 @@
 ---
-- name: Set authorized key took from file
-  authorized_key:
-     user: "{{ hadoop_user }}"
-     key: "{{ lookup('file', 'id_rsa.pub') }}"
+- name: Distributing file to datanodes
+  command:  su - {{ hadoop_user }} -c 'rsync -avzp -e "ssh -o StrictHostKeyChecking=no" /tmp/{{ hadoop_download_url | basename }} {{ inventory_hostname }}:/tmp/{{ hadoop_download_url | basename }}'
+  delegate_to: nn
+
+- name: Run tasks from namenode role 
+  include_role:
+    name: hadoop-namenode
+    tasks_from: hadoop-common
+   
+

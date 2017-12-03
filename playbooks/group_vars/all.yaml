@@ -1,2 +1,4 @@
 ---
 hadoop_user: hadoopadmin
+hadoop_download_url: "http://apache.mindstudios.com/hadoop/common/hadoop-2.8.1/hadoop-2.8.1.tar.gz"
+
